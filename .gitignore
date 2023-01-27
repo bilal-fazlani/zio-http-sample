@@ -1,0 +1,12 @@
+target/
+.bloop
+.bsp
+.idea
+.vscode
+.metals
+.bsp
+**/metals.sbt
+.DS_Store
+*.phd
+*.txt
+*.trc
