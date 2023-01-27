@@ -3,6 +3,7 @@ import zio.http.model.{HttpError, Status}
 import zio.http.api.*
 import zio.http.{Server, ServerConfig, ZClient}
 import zio.http.HttpApp
+import zio.http.Response
 
 object Main extends zio.ZIOAppDefault {
 
@@ -11,16 +12,21 @@ object Main extends zio.ZIOAppDefault {
   val serviceSpec = (SampleApi.spec.toServiceSpec)
     .middleware(MiddlewareSpec.cors)
 
-  val app =
+  val httpApp =
     serviceSpec
       .toHttpApp(SampleEndpoint.endpoint, cors)
-      .withDefaultErrorResponse
+      .mapError {
+        case SampleErrors.InvalidInput =>
+          Response.fromHttpError(HttpError.BadRequest("invalid request"))
+        case SampleErrors.NotAllowed =>
+          Response.fromHttpError(HttpError.Forbidden("no allowed"))
+      }
 
   // accessible at
   // http://localhost:9091/api/sample
 
   override def run = Server
-    .serve(app)
+    .serve(httpApp)
     .exitCode
     .provide(
       ServerConfig.live(ServerConfig.default.port(9091)),
