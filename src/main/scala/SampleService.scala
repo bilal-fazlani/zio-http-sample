@@ -5,13 +5,13 @@ enum SampleErrors:
   case NotAllowed // HTTP 403
 
 trait SampleService:
-  def serve(): IO[SampleErrors, SampleOutput]
+  def serve(input: SampleInput): IO[SampleErrors, SampleOutput]
 
 object SampleService:
   val live = ZLayer.succeed(SampleServiceLive)
 
 case object SampleServiceLive extends SampleService:
-  def serve(): IO[SampleErrors, SampleOutput] = for {
+  def serve(input: SampleInput): IO[SampleErrors, SampleOutput] = for {
     random <- ZIO.randomWith(_.nextIntBetween(0, 3))
     result <- random match
       case 0 => ZIO.fail(SampleErrors.InvalidInput)

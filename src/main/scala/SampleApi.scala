@@ -1,10 +1,7 @@
 import zio.http.api.EndpointSpec
-import zio.http.model.Status
-import zio.http.model.Method
 import zio.http.api.*
 import zio.http.api.RouteCodec.*
 import zio.http.api.QueryCodec.*
-import zio.http.api.CodecType.Route
 import zio.schema.{Schema, DeriveSchema}
 
 case class SampleInput(name: String)
@@ -19,5 +16,13 @@ object SampleOutput {
 
 object SampleApi {
   val spec =
-    EndpointSpec.get(RouteCodec.literal("api") / "sample").out[SampleOutput]
+    EndpointSpec
+      .get("api" / "sample")
+      .in[SampleInput](body)
+      .out[SampleOutput]
+}
+
+package zio.http.api {
+  def body[A: Schema]: HttpCodec[CodecType.Body, A] =
+    HttpCodec.Body(summon[Schema[A]])
 }

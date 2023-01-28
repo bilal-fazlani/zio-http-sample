@@ -23,13 +23,13 @@ object Main extends zio.ZIOAppDefault {
       }
 
   // accessible at
-  // http://localhost:9091/api/sample
+  // http://localhost:9092/api/sample
 
   override def run = Server
     .serve(httpApp)
     .exitCode
     .provide(
-      ServerConfig.live(ServerConfig.default.port(9091)),
+      ServerConfig.live(ServerConfig.default.port(9092)),
       SampleService.live,
       Server.live
     )
